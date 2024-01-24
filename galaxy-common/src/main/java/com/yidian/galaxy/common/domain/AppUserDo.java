@@ -88,12 +88,12 @@ public class AppUserDo extends BaseModel {
     private Integer authenticationStatus;
     
     /**
-     * 最后登录时间
-     */
-    private LocalDateTime lastLoginTime;
-    
-    /**
      * 是否启用
      */
     private Boolean active;
+    
+    /**
+     * 账户性质,0-app注册用户,1-测试用户
+     */
+    private Integer nature;
 }

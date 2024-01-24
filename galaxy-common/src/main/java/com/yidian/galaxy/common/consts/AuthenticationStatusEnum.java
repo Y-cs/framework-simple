@@ -1,4 +1,4 @@
-package com.yidian.galaxy.app.consts;
+package com.yidian.galaxy.common.consts;
 
 import com.google.common.collect.ImmutableMap;
 import com.yidian.galaxy.cornerstone.lambda.CollectMerge;

@@ -1,10 +1,12 @@
 package com.yidian.galaxy.app.controller;
 
 import com.yidian.galaxy.app.entity.dto.AppUserInfoDto;
-import com.yidian.galaxy.app.entity.vo.AppUserLoginVO;
+import com.yidian.galaxy.app.entity.vo.AppUserLoginVo;
+import com.yidian.galaxy.app.entity.vo.AppUserRegisterVo;
 import com.yidian.galaxy.app.service.UserService;
 import com.yidian.galaxy.web.ano.PublicApi;
 import com.yidian.galaxy.web.entity.result.Result;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +34,17 @@ public class UserController {
     @PublicApi
     @Operation(summary = "登录")
     @PostMapping("/login")
-    public Result<AppUserInfoDto> login(@RequestBody @Validated AppUserLoginVO appUserLoginVO) {
-        try {
-            return Result.success(userService.login(appUserLoginVO));
-        } catch (Exception e) {
-            log.error("登录错误：", e);
-            return Result.fail(e);
-        }
+    public Result<AppUserInfoDto> login(
+            @RequestBody @Validated(AppUserLoginVo.PhonePasswordLogin.class) AppUserLoginVo appUserLoginVO) {
+        return Result.success(userService.login(appUserLoginVO));
+    }
+    
+    @PostMapping("/register")
+    @PublicApi
+    @ApiOperation("注册")
+    public Result<?> register(@RequestBody @Validated AppUserRegisterVo userRegisterVO) {
+        userService.register(userRegisterVO);
+        return Result.success();
     }
     
 }

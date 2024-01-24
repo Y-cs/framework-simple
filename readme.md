@@ -82,6 +82,45 @@
 **关于Mybatis-Plus**  
 mybatis-plus有很多可以使用的东西,不建议复杂查询使用生成器编写,一个是生成器隐藏了实现细节,维护性不是很好.
 
+**日志**  
+日志输出级别如果是常规的BusinessException的话输出为warn  
+如果是影响流程的错误或者预料之外的错误请输出error
+
+### 数据库说明
+
+**数据库字段设计**
+
+数据库所有字段必须为not null,暂时为空的字段设置默认值.  
+如果你使用了BLOB,TEXT,GEOMETRY,JSON类型,这个问题有待讨论.
+
+我们真的很需要你在每个字段上写明注释(`comment`),当然还有表上.
+
+信息表数据需要逻辑删除,如果对性能要求较高的时候可以做删除表`_del`
+
+`char`和`varchar`请二进制对齐,可能没太多的实际意义,就当看着好看吧.
+
+- id,使用自增的无符号bigint`id bigint unsigned auto_increment primary key`
+
+- 内容只能为真或假,例如`启停(active)`使用`tinyint(1)`
+
+- `状态(status)`,`类型(type)`,根据你的习惯设定为`tinyint`或者`int`
+
+- 时间类型,通常情况下使用`datetime`,如果你需要设定为空的话`datetime default '1000-01-01 00:00:00' not null`
+  你可以使用[DateTime.java](galaxy-framework%2Fgalaxy-framework-cornerstone%2Fsrc%2Fmain%2Fjava%2Fcom%2Fyidian%2Fgalaxy%2Fcornerstone%2Ftime%2FDateTime.java)
+  来判断是不是空
+
+- 记录表请以`_record`结尾,关系表请以`_rel`结尾,逻辑删除表`_del`如果你需要的话  
+
+- 信息数据表公共字段,Do继承[BaseModel.java](galaxy-framework%2Fgalaxy-framework-web%2Fsrc%2Fmain%2Fjava%2Fcom%2Fyidian%2Fgalaxy%2Fweb%2Fentity%2FBaseModel.java)
+```sql
+    create_id             bigint unsigned default '0'                   not null comment '创建人',
+    create_time           datetime        default CURRENT_TIMESTAMP     not null comment '创建时间',
+    modify_id             bigint unsigned default '0'                   not null comment '修改人',
+    modify_time           datetime        default CURRENT_TIMESTAMP     not null on update CURRENT_TIMESTAMP comment '修改时间',
+    del                   tinyint(1)      default 0                     not null comment '删除标记'
+```
+
+
 ### 包说明
 
 | 包名         | 说明    |

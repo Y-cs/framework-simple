@@ -12,6 +12,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @Configuration
 @EnableWebMvc
 @ConfigurationPropertiesScan(basePackages = "com.yidian.galaxy.web.config.properties")
-public class ApplicationConfig {
+public class WebFrameworkConfig {
 
 }

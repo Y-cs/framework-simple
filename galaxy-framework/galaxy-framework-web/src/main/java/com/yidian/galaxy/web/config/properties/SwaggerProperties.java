@@ -11,7 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @Getter
 @Setter
-@ConfigurationProperties("swagger")
+@ConfigurationProperties("swagger-config")
 public class SwaggerProperties {
     
     private boolean enable = false;

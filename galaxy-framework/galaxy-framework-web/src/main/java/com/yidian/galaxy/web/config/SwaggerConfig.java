@@ -24,7 +24,7 @@ import java.util.Optional;
 @EnableOpenApi
 @ConditionalOnBean(SwaggerProperties.class)
 @ConditionalOnWebApplication
-@ConditionalOnProperty(name = "swagger.enable", havingValue = "true")
+@ConditionalOnProperty(name = "swagger-config.enable", havingValue = "true")
 @RequiredArgsConstructor
 public class SwaggerConfig {
     

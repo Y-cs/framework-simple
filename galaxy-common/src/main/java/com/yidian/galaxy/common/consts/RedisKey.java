@@ -1,4 +1,4 @@
-package com.yidian.galaxy.app.consts;
+package com.yidian.galaxy.common.consts;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -6,14 +6,13 @@ import lombok.RequiredArgsConstructor;
 /**
  * RedisKey
  *
- * @author changshuai.yuan create on 2024/1/23 9:41
+ * @author changshuai.yuan create on 2024/1/24 18:12
  */
 @Getter
 @RequiredArgsConstructor
 public enum RedisKey {
     
-    APP_USER("app_user:", 60 * 60 * 24 * 7),
-    APP_REGISTER_CAPTCHA("captcha:app_register:", 5 * 60);
+    NOTICE_TEMPLATE("notice_template", -1L);
     
     private final String prefix;
     

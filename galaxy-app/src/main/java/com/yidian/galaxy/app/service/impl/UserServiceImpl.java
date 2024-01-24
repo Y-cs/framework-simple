@@ -1,10 +1,12 @@
 package com.yidian.galaxy.app.service.impl;
 
 import cn.hutool.core.util.IdcardUtil;
+import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.yidian.galaxy.app.consts.RedisKey;
 import com.yidian.galaxy.app.entity.dto.AppUserInfoDto;
-import com.yidian.galaxy.app.entity.vo.AppUserLoginVO;
+import com.yidian.galaxy.app.entity.vo.AppUserLoginVo;
+import com.yidian.galaxy.app.entity.vo.AppUserRegisterVo;
 import com.yidian.galaxy.app.service.UserService;
 import com.yidian.galaxy.common.biz.UserBiz;
 import com.yidian.galaxy.common.consts.AccountPlatformEnum;
@@ -16,6 +18,7 @@ import com.yidian.galaxy.web.exception.BusinessException;
 import com.yidian.galaxy.web.support.JwtSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -35,9 +38,9 @@ public class UserServiceImpl implements UserService {
     private final RedisSupport redisSupport;
     
     @Override
-    public AppUserInfoDto login(AppUserLoginVO appUserLoginVO) {
+    public AppUserInfoDto login(AppUserLoginVo appUserLoginVO) {
         AppUserDo appUser;
-        if (AppUserLoginVO.LoginTypeEnum.PHONE_PASSWORD == appUserLoginVO.getType()) {
+        if (AppUserLoginVo.LoginTypeEnum.PHONE_PASSWORD == appUserLoginVO.getType()) {
             //手机号密码登录
             final String phone = appUserLoginVO.getPhone();
             //校验系统有没有开通账户
@@ -67,5 +70,22 @@ public class UserServiceImpl implements UserService {
         redisSupport.objectRedisOperations()
                 .set(RedisKey.APP_USER.getPrefix(), appUserInfoDto, RedisKey.APP_USER.getTimeout());
         return appUserInfoDto;
+    }
+    
+    @Override
+    public void register(AppUserRegisterVo userRegisterVO) {
+        String phone = userRegisterVO.getPhone();
+        Asserts.isFalse(PhoneUtil.isPhone(phone)).throwBusinessException("手机号格式错误");
+        String captcha = redisSupport.stringRedisOperations().get(RedisKey.APP_REGISTER_CAPTCHA.getPrefix() + phone);
+        Asserts.isFalse(StringUtils.isNotBlank(captcha)).throwBusinessException("验证码过期");
+        Asserts.isFalse(captcha.equals(userRegisterVO.getVerificationCode())).throwBusinessException("验证码错误");
+        Asserts.isTrue(userBiz.checkAppUserExist(phone)).throwBusinessException("用户已注册");
+        String inviteCode = userRegisterVO.getInviteCode();
+        Long inviteUserId = null;
+        if (StringUtils.isNotBlank(inviteCode)) {
+            inviteUserId = userBiz.findInviteUserId(inviteCode);
+            Asserts.isNull(inviteUserId).throwBusinessException("邀请人不存在");
+        }
+        userBiz.registerAppUser(phone, DigestUtil.sha256Hex(userRegisterVO.getPassword()), inviteUserId);
     }
 }
