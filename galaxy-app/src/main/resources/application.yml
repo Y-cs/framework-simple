@@ -1,0 +1,78 @@
+server:
+  port: 9100
+  servlet:
+    context-path: /api
+spring:
+  application:
+    name: Galaxy-App
+  datasource:
+    username: root
+    password: YDMM@nft
+    url: jdbc:mysql://rm-2ze635x8bt515z0k8jo.mysql.rds.aliyuncs.com:3306/galaxy_dev?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource # 数据源类型
+    hikari:
+      connection-timeout: 30000     # 等待连接分配连接的最大时长(毫秒),超出时长还没可用连接则发送SQLException,默认30秒
+      minimum-idle: 5               # 最小连接数
+      maximum-pool-size: 20         # 最大连接数
+      auto-commit: true             # 自动提交
+      idle-timeout: 600000          # 连接超时的最大时长(毫秒),超时则被释放(retired),默认10分钟
+      pool-name: DateSourceHikariCP # 连接池名称
+      max-lifetime: 1800000         # 连接的生命时长(毫秒),超时而且没被使用则被释放,默认30分钟(1800000ms)
+      connection-init-sql: SELECT 1 # 连接时发起SQL测试脚本
+  redis:
+    host: r-2zeb2dxcmloouxiv16pd.redis.rds.aliyuncs.com
+    port: 6379
+    password: r-2zeb2dxcmloouxiv16:YDMM@nft
+    database: 1
+    timeout: 5000
+    lettuce:
+      pool:
+        max-wait: 30000 # 连接池最大阻塞等待时间(使用负数表示没有限制,默认-1)
+        max-active: 100 # 连接池最大连接数(使用负数表示没有限制,默认8)
+        max-idle: 20    # 连接池中的最大空闲连接(默认8)
+        min-idle: 0     # 连接池中的最小空闲连接(默认0)
+# mybatis-plus
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+  mapper-locations: classpath:/mapper/*.xml
+#  swagger
+springfox:
+  documentation:
+    swagger-ui:
+      enabled: false
+swagger:
+  enable: true
+  base-package: com.yidian.galaxy.app.controller
+logging:
+  config:
+
+# 项目配置
+project:
+  # 久恒智卡配置
+  jhzk:
+    appid: wanyouka12321
+    base-url: http://test.web.cardhub.org.cn/api/
+    #    base-url: https://cardhub.org.cn/api/
+    app-public-key:
+    app-private-key: MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBALsZI5aLo2G4ubowNOxR21kNEchq8zD+MBDnr+a/dZRYSVDC9LvdngXrNgQDHagXr4OS005hwEtGVVQJRZUs+NXjosH3WPmGLR9kS5Xx2IdqetJbYpLyq2JWcHEU8cjfVMiXAJOgsLuL8/WgMCDHz04k7EJMbyW7CMI3ikIcwg4fAgMBAAECgYAUCWisxi6MmBZX0LLSPh/yBPrLDl0V+ZrXLKDDYuyqItxTKFXCSsUSGDL0Mgs6hbLXseEsSz6nMRSRR97qT2MkgdxsPPdKklBtgLazFvcs6aaskepk+f4uIggY/+dXhi0+AeokXFHZQdAFoXuOxSinzzVPTEec+I+bCM4QRTzcXQJBAOpi3Z1tM1Z9dDE8/fo3B8xHrP+gniAJz71afYQPO9p5NMrcq2tmyIJ1g5Agj5f+rPCGjy5XpNktDNWzeMMf0csCQQDMWfMlXAGnq7xybMws3+4SGJWEEFhZWJAzfo+Ie7ZO2xiwP+jrurWIyBc4tJIp6KGluIjESySYFa6ejFHrfhp9AkEAwFh98bEpzjKJ5dZdvrbmaVfwup7+5N/oYUYfdv5hafrJvii1bCAfMCBr5R0zedJ/7asfWTKHj8oOnFj6I3a7XQJAZmLbFGjY222MabhhREqeOarfnt+hpIJfHa3XtIZnfXMBF62twg42TmYSXHL8mMrZ0vJ2dANCPoD+kKm1kcwI8QJBALYdUUrIXrFPeqWk72siqd45/Ulhb4o0cpfGz2GkTh6YnTviai8Rz3qsmlJRSt/MRTpnFWae/GFpmahKqWZ6+c8=
+    platform-public-key: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDZsUw2uircyTRBtW5gSXnyAonT0tpKpK9Fc3m8AtIxUwUOtkltgne95frm8fuOXMupg2W/pVol1G0WPimI8VHtSn6BYWYTgMDfsOrHK58PglOlo4L7G0ezfOaB33k5mmEZTBrMqVNuz7mtZbbuMcYvC4pc0t4R6HrvSYAwkVCzfQIDAQAB
+  # 短信配置
+  sms:
+    username: 1766118123
+    password: Cr131672
+    url: http://api.smsbao.com/sms
+  # 阿里云配置
+  ali:
+    oss:
+      oss-region: cn-beijing
+      access-key-id: LTAI5tESkXYVxtVsnLUsqVN2
+      access-key-secret: 1A00rmEfmqLUVOGpwirrUzkxyeNwfw
+      oss-bucket: kayi-file
+      role-arn: acs:ram::1016653632179736:role/oss-sts
+
