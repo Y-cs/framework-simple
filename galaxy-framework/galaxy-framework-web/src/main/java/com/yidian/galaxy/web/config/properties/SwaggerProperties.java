@@ -16,6 +16,4 @@ public class SwaggerProperties {
     
     private boolean enable = false;
     
-    private String basePackage;
-    
 }

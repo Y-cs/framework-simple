@@ -1,6 +1,6 @@
 package com.yidian.galaxy.common.domain;
 
-import com.yidian.galaxy.common.consts.NoticeTemplate;
+import com.yidian.galaxy.common.consts.NoticeTemplateConst;
 import com.yidian.galaxy.web.entity.BaseModel;
 import lombok.Data;
 
@@ -14,9 +14,9 @@ public class NoticeTemplateDo extends BaseModel {
     
     private Long id;
     
-    private NoticeTemplate.UsesEnum uses;
+    private NoticeTemplateConst.UsesEnum uses;
     
-    private NoticeTemplate.ChannelEnum channel;
+    private NoticeTemplateConst.ChannelEnum channel;
     
     private String notice;
     

@@ -10,5 +10,12 @@ import com.yidian.galaxy.common.entity.dto.NoticeDto;
  */
 public interface NoticeStrategy {
     
+    /**
+     * 发送消息
+     *
+     * @param template  使用模板
+     * @param noticeDto 消息内容
+     * @return 返回true意味不需要重试, false意味着需要重试
+     */
     boolean sendMsg(NoticeTemplateDo template, NoticeDto noticeDto);
 }

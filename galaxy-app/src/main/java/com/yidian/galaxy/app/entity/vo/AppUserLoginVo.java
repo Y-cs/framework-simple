@@ -19,21 +19,30 @@ public class AppUserLoginVo {
     
     }
     
+    public interface PhoneCaptchaLogin {
+    
+    }
+    
     public enum LoginTypeEnum {
-        PHONE_PASSWORD
+        PHONE_PASSWORD,
+        PHONE_CAPTCHA
     }
     
     @NotNull(message = "登录方式不能为空")
     @Schema(description = "登录类型")
     private LoginTypeEnum type = LoginTypeEnum.PHONE_PASSWORD;
     
-    @NotBlank(message = "手机号不能为空", groups = PhonePasswordLogin.class)
+    @NotBlank(message = "手机号不能为空", groups = {PhonePasswordLogin.class, PhoneCaptchaLogin.class})
     @Schema(description = "手机号")
     private String phone;
     
     @NotBlank(message = "密码不能为空", groups = PhonePasswordLogin.class)
     @Schema(description = "密码")
     private String password;
+    
+    @NotBlank(message = "验证码不能为空", groups = PhoneCaptchaLogin.class)
+    @Schema(description = "验证码")
+    private String captcha;
     
     
 }

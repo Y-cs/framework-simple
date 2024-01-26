@@ -1,11 +1,11 @@
-package com.yidian.galaxy.common.strategy;
+package com.yidian.galaxy.common.support;
 
 import com.yidian.galaxy.common.biz.NoticeTemplateBiz;
 import com.yidian.galaxy.common.consts.NoticeTemplateConst;
 import com.yidian.galaxy.common.domain.NoticeTemplateDo;
 import com.yidian.galaxy.common.entity.dto.NoticeDto;
-import com.yidian.galaxy.common.strategy.notice.DxbNoticeSupport;
-import com.yidian.galaxy.common.strategy.notice.NoticeSupport;
+import com.yidian.galaxy.common.support.notice.DxbNoticeStrategy;
+import com.yidian.galaxy.common.support.notice.NoticeStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -13,27 +13,27 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * NoticeStrategy 消息通知
+ * NoticeSupport 消息通知
  *
  * @author changshuai.yuan create on 2024/1/25 11:29
  */
 @Slf4j
 @Component
-public class NoticeStrategy {
+public class NoticeSupport {
     
-    private final Map<NoticeTemplateConst.ChannelEnum, NoticeSupport> strategy = new EnumMap<>(
+    private final Map<NoticeTemplateConst.ChannelEnum, NoticeStrategy> strategy = new EnumMap<>(
             NoticeTemplateConst.ChannelEnum.class);
     
     private final NoticeTemplateBiz noticeTemplateBiz;
     
-    public NoticeStrategy(NoticeTemplateBiz noticeTemplateBiz, DxbNoticeSupport dxbNoticeSupport) {
+    public NoticeSupport(NoticeTemplateBiz noticeTemplateBiz, DxbNoticeStrategy dxbNoticeStrategy) {
         this.noticeTemplateBiz = noticeTemplateBiz;
-        strategy.put(NoticeTemplateConst.ChannelEnum.SMS_DXB, dxbNoticeSupport);
+        strategy.put(NoticeTemplateConst.ChannelEnum.SMS_DXB, dxbNoticeStrategy);
     }
     
     public boolean pushMsg(NoticeTemplateConst.UsesEnum usesEnum, String recipients, Object... args) {
         doPushMsg(new NoticeDto().setUsesEnum(usesEnum).setRecipients(recipients).setArgs(args));
-        return false;
+        return true;
     }
     
     /**
@@ -49,8 +49,19 @@ public class NoticeStrategy {
             return;
         }
         NoticeTemplateConst.ChannelEnum channel = template.getChannel();
-        NoticeSupport noticeSupport = strategy.get(channel);
-        boolean sendResult = noticeSupport.sendMsg(template, noticeDto);
+        NoticeStrategy noticeSupport = strategy.get(channel);
+        boolean success = false;
+        try {
+            success = noticeSupport.sendMsg(template, noticeDto);
+        } catch (Throwable t) {
+            log.error("消息通知失败", t);
+            //下游 抛出没有意义
+        } finally {
+            //todo 记录日志
+            if (!success) {
+                //todo 重试
+            }
+        }
     }
     
 }

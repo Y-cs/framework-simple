@@ -1,8 +1,8 @@
 package com.yidian.galaxy.common.biz;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.yidian.galaxy.common.consts.NoticeTemplate;
-import com.yidian.galaxy.common.consts.RedisKey;
+import com.yidian.galaxy.common.consts.NoticeTemplateConst;
+import com.yidian.galaxy.common.consts.CommonRedisKey;
 import com.yidian.galaxy.common.domain.NoticeTemplateDo;
 import com.yidian.galaxy.common.mapper.NoticeTemplateMapper;
 import com.yidian.galaxy.redis.support.RedisSupport;
@@ -29,9 +29,9 @@ public class NoticeTemplateBiz {
      * @param usesEnum 用途枚举
      * @return 模板
      */
-    public String findTemplate(NoticeTemplate.UsesEnum usesEnum) {
+    public NoticeTemplateDo findTemplate(NoticeTemplateConst.UsesEnum usesEnum) {
         NoticeTemplateDo noticeTemplateDo = redisSupport.hashRedisOperations()
-                .hGet(RedisKey.NOTICE_TEMPLATE.getPrefix(), usesEnum.name());
+                .hGet(CommonRedisKey.NOTICE_TEMPLATE.getKey(), usesEnum.name());
         if (noticeTemplateDo == null) {
             noticeTemplateDo = noticeTemplateMapper.selectOne(
                     new LambdaQueryWrapper<NoticeTemplateDo>().eq(NoticeTemplateDo::getUses, usesEnum));
@@ -40,9 +40,9 @@ public class NoticeTemplateBiz {
                 throw new BusinessException("模板不存在");
             }
             redisSupport.hashRedisOperations()
-                    .hSet(RedisKey.NOTICE_TEMPLATE.getPrefix(), usesEnum.name(), noticeTemplateDo);
+                    .hSet(CommonRedisKey.NOTICE_TEMPLATE.getKey(), usesEnum.name(), noticeTemplateDo);
         }
-        return noticeTemplateDo.getNotice();
+        return noticeTemplateDo;
     }
     
 }

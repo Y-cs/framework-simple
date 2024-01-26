@@ -1,5 +1,6 @@
 package com.yidian.galaxy.redis.support;
 
+import com.yidian.galaxy.redis.entity.RedisKeyWrapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -98,6 +99,16 @@ public class RedisSupport {
      */
     public void expire(String key, long seconds) {
         jsonRedisTemplate.expire(key, seconds, TimeUnit.SECONDS);
+    }
+    
+    /**
+     * 续时
+     *
+     * @param redisKeyWrapper key
+     * @param args            组成key的参数
+     */
+    public void expire(RedisKeyWrapper redisKeyWrapper, Object... args) {
+        jsonRedisTemplate.expire(redisKeyWrapper.keyFormat(args), redisKeyWrapper.getTimeout(), TimeUnit.SECONDS);
     }
     
     /**

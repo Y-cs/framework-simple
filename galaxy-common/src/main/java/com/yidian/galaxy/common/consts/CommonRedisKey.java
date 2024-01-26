@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public enum RedisKey implements RedisKeyWrapper {
+public enum CommonRedisKey implements RedisKeyWrapper {
     
     NOTICE_TEMPLATE("notice_template", -1L);
     

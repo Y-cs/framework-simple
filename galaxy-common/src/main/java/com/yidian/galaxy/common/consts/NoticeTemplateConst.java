@@ -15,9 +15,12 @@ public interface NoticeTemplateConst {
      * 模板用途
      */
     enum UsesEnum {
-        APP_USER_REGISTER
+        APP_USER_CAPTCHA
     }
     
+    /**
+     * 通知渠道
+     */
     @Getter
     @RequiredArgsConstructor
     enum ChannelEnum {

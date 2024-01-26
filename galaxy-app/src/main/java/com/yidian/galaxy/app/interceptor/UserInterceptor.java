@@ -1,9 +1,7 @@
 package com.yidian.galaxy.app.interceptor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yidian.galaxy.app.consts.RedisKey;
+import com.yidian.galaxy.app.consts.AppRedisKey;
 import com.yidian.galaxy.app.entity.dto.AppUserInfoDto;
-import com.yidian.galaxy.cornerstone.json.JsonSupport;
 import com.yidian.galaxy.redis.support.RedisSupport;
 import com.yidian.galaxy.web.ano.PublicApi;
 import com.yidian.galaxy.web.entity.JwtParam;
@@ -12,9 +10,11 @@ import com.yidian.galaxy.web.entity.result.Result;
 import com.yidian.galaxy.web.exception.BusinessException;
 import com.yidian.galaxy.web.exception.SystemExceptionEnum;
 import com.yidian.galaxy.web.session.UserHolder;
+import com.yidian.galaxy.web.support.JsonSupport;
 import com.yidian.galaxy.web.support.JwtSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.entity.ContentType;
 import org.slf4j.MDC;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -39,7 +40,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserInterceptor implements HandlerInterceptor {
     
-    private final ObjectMapper json = JsonSupport.getJson();
+    public static final String PHONE = "phone";
     
     private final RedisSupport redisSupport;
     
@@ -71,22 +72,28 @@ public class UserInterceptor implements HandlerInterceptor {
     }
     
     private void cacheUserInfo(JwtParam jwtParam) {
-        final String redisKey = RedisKey.APP_USER.getPrefix() + jwtParam.getUserId();
+        final String redisKey = AppRedisKey.APP_USER.keyFormat(jwtParam.getUserId());
         final AppUserInfoDto appUserInfo = redisSupport.objectRedisOperations().get(redisKey);
         //存在取出用户信息存入UserHolder
         UserHolder.Editor.setUser(
                 UserSession.of(appUserInfo.getAccountId(), appUserInfo.getUserId(), appUserInfo.getPhone(),
                         appUserInfo.getNikeName(), appUserInfo.getName(), appUserInfo.getCreateTime()));
         //延时登陆状态
-        redisSupport.expire(redisKey, RedisKey.APP_USER.getTimeout());
+        redisSupport.expire(redisKey, AppRedisKey.APP_USER.getTimeout());
         //MDC
-        MDC.put("phone", appUserInfo.getPhone());
+        MDC.put(PHONE, appUserInfo.getPhone());
     }
     
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
             @Nullable ModelAndView modelAndView) {
+    }
+    
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
+            Exception ex) {
         UserHolder.Editor.removeUser();
+        MDC.remove(PHONE);
     }
     
     /**
@@ -96,11 +103,11 @@ public class UserInterceptor implements HandlerInterceptor {
      * @param exceptionEnum 错误枚举
      */
     public void responseError(HttpServletResponse response, SystemExceptionEnum exceptionEnum) {
-        response.setCharacterEncoding("utf-8");
-        response.setContentType("application/json; charset=utf-8");
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.setContentType(ContentType.APPLICATION_JSON.toString());
         try (PrintWriter writer = response.getWriter()) {
             Result<Object> fail = Result.fail(new BusinessException(exceptionEnum));
-            writer.write(json.writeValueAsString(fail));
+            writer.write(JsonSupport.toJson(fail));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

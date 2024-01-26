@@ -3,10 +3,11 @@ package com.yidian.galaxy.app.service.impl;
 import cn.hutool.core.util.IdcardUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.crypto.digest.DigestUtil;
-import com.yidian.galaxy.app.consts.RedisKey;
+import com.yidian.galaxy.app.consts.AppRedisKey;
 import com.yidian.galaxy.app.entity.dto.AppUserInfoDto;
 import com.yidian.galaxy.app.entity.vo.AppUserLoginVo;
 import com.yidian.galaxy.app.entity.vo.AppUserRegisterVo;
+import com.yidian.galaxy.common.entity.vo.AppUserUpdateVo;
 import com.yidian.galaxy.app.service.UserService;
 import com.yidian.galaxy.common.biz.UserBiz;
 import com.yidian.galaxy.common.consts.AccountPlatformEnum;
@@ -15,6 +16,7 @@ import com.yidian.galaxy.redis.support.RedisSupport;
 import com.yidian.galaxy.web.entity.JwtParam;
 import com.yidian.galaxy.web.exception.Asserts;
 import com.yidian.galaxy.web.exception.BusinessException;
+import com.yidian.galaxy.web.session.UserHolder;
 import com.yidian.galaxy.web.support.JwtSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,8 +69,7 @@ public class UserServiceImpl implements UserService {
                 .setIdCard(IdcardUtil.hide(appUser.getIdCard(), 2, 15)).setToken(token)
                 .setCreateTime(appUser.getCreateTime());
         //缓存用户信息
-        redisSupport.objectRedisOperations()
-                .set(RedisKey.APP_USER.getPrefix(), appUserInfoDto, RedisKey.APP_USER.getTimeout());
+        redisSupport.objectRedisOperations().set(appUserInfoDto, AppRedisKey.APP_USER, appUser.getId());
         return appUserInfoDto;
     }
     
@@ -76,8 +77,8 @@ public class UserServiceImpl implements UserService {
     public void register(AppUserRegisterVo userRegisterVO) {
         String phone = userRegisterVO.getPhone();
         Asserts.isFalse(PhoneUtil.isPhone(phone)).throwBusinessException("手机号格式错误");
-        String captcha = redisSupport.stringRedisOperations().get(RedisKey.APP_REGISTER_CAPTCHA.getPrefix() + phone);
-        Asserts.isFalse(StringUtils.isNotBlank(captcha)).throwBusinessException("验证码过期");
+        String captcha = redisSupport.stringRedisOperations().get(AppRedisKey.APP_USER_CAPTCHA.keyFormat(phone));
+        Asserts.isTrue(StringUtils.isBlank(captcha)).throwBusinessException("验证码过期");
         Asserts.isFalse(captcha.equals(userRegisterVO.getVerificationCode())).throwBusinessException("验证码错误");
         Asserts.isTrue(userBiz.checkAppUserExist(phone)).throwBusinessException("用户已注册");
         String inviteCode = userRegisterVO.getInviteCode();
@@ -87,5 +88,19 @@ public class UserServiceImpl implements UserService {
             Asserts.isNull(inviteUserId).throwBusinessException("邀请人不存在");
         }
         userBiz.registerAppUser(phone, DigestUtil.sha256Hex(userRegisterVO.getPassword()), inviteUserId);
+    }
+    
+    @Override
+    public AppUserInfoDto getUserInfo() {
+        return redisSupport.objectRedisOperations()
+                .get(AppRedisKey.APP_USER.keyFormat(UserHolder.getUser().getUserId()));
+    }
+    
+    @Override
+    public boolean updateUserInfo(AppUserUpdateVo appUserUpdateVo) {
+        Asserts.isTrue(UserHolder.getUser().getUserId() != appUserUpdateVo.getId())
+                .throwBusinessException("只能修改自己的信息");
+        userBiz.updateUserInfo(appUserUpdateVo);
+        return true;
     }
 }

@@ -9,8 +9,10 @@ public interface RedisKeyWrapper {
     
     String getKey();
     
-    long getTimeOut();
+    long getTimeout();
     
-    String keyFormat(Object... args);
+    default String keyFormat(Object... args) {
+        return String.format(getKey(), args);
+    }
     
 }

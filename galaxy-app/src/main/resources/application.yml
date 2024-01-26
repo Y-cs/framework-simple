@@ -48,7 +48,6 @@ springfox:
       enabled: false
 swagger-config:
   enable: true
-  base-package: com.yidian.galaxy.app.controller
 logging:
   config:
 

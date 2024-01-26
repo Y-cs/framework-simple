@@ -3,6 +3,7 @@ package com.yidian.galaxy.app.controller;
 import com.yidian.galaxy.app.entity.dto.AppUserInfoDto;
 import com.yidian.galaxy.app.entity.vo.AppUserLoginVo;
 import com.yidian.galaxy.app.entity.vo.AppUserRegisterVo;
+import com.yidian.galaxy.common.entity.vo.AppUserUpdateVo;
 import com.yidian.galaxy.app.service.UserService;
 import com.yidian.galaxy.web.ano.PublicApi;
 import com.yidian.galaxy.web.entity.result.Result;
@@ -45,6 +46,18 @@ public class UserController {
     public Result<?> register(@RequestBody @Validated AppUserRegisterVo userRegisterVO) {
         userService.register(userRegisterVO);
         return Result.success();
+    }
+    
+    @PostMapping("/getUserInfo")
+    @ApiOperation("获取当前登录人信息")
+    public Result<AppUserInfoDto> getUserInfo() {
+        return Result.success(userService.getUserInfo());
+    }
+    
+    @PostMapping("/updateUserInfo")
+    @ApiOperation("更新用户信息")
+    public Result<Boolean> updateUserInfo(AppUserUpdateVo appUserUpdateVo) {
+        return Result.success(userService.updateUserInfo(appUserUpdateVo));
     }
     
 }

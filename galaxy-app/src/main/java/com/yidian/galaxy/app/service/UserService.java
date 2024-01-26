@@ -3,6 +3,7 @@ package com.yidian.galaxy.app.service;
 import com.yidian.galaxy.app.entity.dto.AppUserInfoDto;
 import com.yidian.galaxy.app.entity.vo.AppUserLoginVo;
 import com.yidian.galaxy.app.entity.vo.AppUserRegisterVo;
+import com.yidian.galaxy.common.entity.vo.AppUserUpdateVo;
 
 /**
  * user service
@@ -14,4 +15,8 @@ public interface UserService {
     AppUserInfoDto login(AppUserLoginVo appUserLoginVO);
     
     void register(AppUserRegisterVo userRegisterVO);
+    
+    AppUserInfoDto getUserInfo();
+    
+    boolean updateUserInfo(AppUserUpdateVo appUserUpdateVo);
 }

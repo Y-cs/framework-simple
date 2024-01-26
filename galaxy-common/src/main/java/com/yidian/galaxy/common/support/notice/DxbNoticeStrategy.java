@@ -1,4 +1,4 @@
-package com.yidian.galaxy.common.strategy.notice;
+package com.yidian.galaxy.common.support.notice;
 
 import com.yidian.galaxy.common.config.properties.DxbSmsProperties;
 import com.yidian.galaxy.common.domain.NoticeTemplateDo;
@@ -27,7 +27,7 @@ import java.security.NoSuchAlgorithmException;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class DxbNoticeSupport implements NoticeSupport {
+public class DxbNoticeStrategy implements NoticeStrategy {
     
     private static final CloseableHttpClient HTTP_CLIENT = HttpClients.createDefault();
     

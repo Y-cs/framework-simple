@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public enum RedisKey implements RedisKeyWrapper {
+public enum AppRedisKey implements RedisKeyWrapper {
     
     APP_USER("app_user:%s", 60 * 60 * 24 * 7),
     APP_USER_CAPTCHA("app_user_captcha:%s", 5 * 60);

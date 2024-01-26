@@ -14,6 +14,7 @@ public enum SystemExceptionEnum implements ExceptionWrapper {
     FAIL(-1, "服务器错误"),
     PARAM_ERROR(-2, "参数错误"),
     OUT_EXCEPTION(-10, "第三方系统错误"),
+    DATA_EXCEPTION(-11, "数据错误"),
     //用户及权限相关错误100+
     NOT_LOGIN(-100, "没有登录"),
     LOGIN_TIME_OUT(-101, "登录过期");

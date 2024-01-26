@@ -8,15 +8,18 @@ import com.yidian.galaxy.common.consts.UserSexEnum;
 import com.yidian.galaxy.common.domain.AccountDo;
 import com.yidian.galaxy.common.domain.AppUserDo;
 import com.yidian.galaxy.common.domain.InviteRecordDo;
+import com.yidian.galaxy.common.entity.vo.AppUserUpdateVo;
 import com.yidian.galaxy.common.mapper.AccountMapper;
 import com.yidian.galaxy.common.mapper.AppUserMapper;
 import com.yidian.galaxy.common.mapper.InviteRecordMapper;
 import com.yidian.galaxy.web.support.SqidsSupport;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -102,5 +105,28 @@ public class UserBiz {
         return Optional.ofNullable(appUserMapper.selectOne(
                         new LambdaQueryWrapper<AppUserDo>().eq(AppUserDo::getInviteCode, inviteCode).select(AppUserDo::getId)))
                 .map(AppUserDo::getId).orElse(null);
+    }
+    
+    /**
+     * 更新App用户信息
+     *
+     * @param appUserUpdateVo appUserUpdateVo
+     */
+    public void updateUserInfo(AppUserUpdateVo appUserUpdateVo) {
+        AppUserDo appUserDo = new AppUserDo();
+        appUserDo.setId(appUserUpdateVo.getId());
+        if (StringUtils.isNotBlank(appUserUpdateVo.getNikeName())) {
+            appUserDo.setNickName(appUserUpdateVo.getNikeName());
+        }
+        if (StringUtils.isNotBlank(appUserUpdateVo.getHeadImg())) {
+            appUserDo.setHeadImg(appUserUpdateVo.getHeadImg());
+        }
+        if (StringUtils.isNotBlank(appUserUpdateVo.getPassword())) {
+            appUserDo.setPassword(appUserUpdateVo.getPassword());
+        }
+        if (!Objects.isNull(appUserUpdateVo.getSex())) {
+            appUserDo.setSex(appUserUpdateVo.getSex());
+        }
+        appUserMapper.updateById(appUserDo);
     }
 }
