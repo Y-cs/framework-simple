@@ -1,5 +1,6 @@
 package com.yidian.galaxy.common.consts;
 
+import com.yidian.galaxy.redis.entity.RedisKeyWrapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -10,11 +11,11 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public enum RedisKey {
+public enum RedisKey implements RedisKeyWrapper {
     
     NOTICE_TEMPLATE("notice_template", -1L);
     
-    private final String prefix;
+    private final String key;
     
     private final long timeout;
     

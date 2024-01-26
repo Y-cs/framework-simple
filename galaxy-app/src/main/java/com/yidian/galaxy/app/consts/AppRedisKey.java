@@ -1,5 +1,6 @@
 package com.yidian.galaxy.app.consts;
 
+import com.yidian.galaxy.redis.entity.RedisKeyWrapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -10,12 +11,12 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public enum RedisKey {
+public enum RedisKey implements RedisKeyWrapper {
     
-    APP_USER("app_user:", 60 * 60 * 24 * 7),
-    APP_REGISTER_CAPTCHA("captcha:app_register:", 5 * 60);
+    APP_USER("app_user:%s", 60 * 60 * 24 * 7),
+    APP_USER_CAPTCHA("app_user_captcha:%s", 5 * 60);
     
-    private final String prefix;
+    private final String key;
     
     private final long timeout;
     

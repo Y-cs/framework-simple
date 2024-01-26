@@ -1,9 +1,8 @@
-package com.yidian.galaxy.common.service.impl;
+package com.yidian.galaxy.common.strategy.notice;
 
-import com.yidian.galaxy.common.biz.NoticeTemplateBiz;
 import com.yidian.galaxy.common.config.properties.DxbSmsProperties;
-import com.yidian.galaxy.common.consts.NoticeTemplate;
-import com.yidian.galaxy.common.service.SmsService;
+import com.yidian.galaxy.common.domain.NoticeTemplateDo;
+import com.yidian.galaxy.common.entity.dto.NoticeDto;
 import com.yidian.galaxy.web.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -21,26 +20,24 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * SmsServiceImpl
+ * DxbNoticeTemplate
  *
- * @author changshuai.yuan create on 2024/1/24 17:54
+ * @author changshuai.yuan create on 2024/1/25 11:33
  */
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
-public class DxbSmsServiceImpl implements SmsService {
+public class DxbNoticeSupport implements NoticeSupport {
     
     private static final CloseableHttpClient HTTP_CLIENT = HttpClients.createDefault();
-    
-    private final NoticeTemplateBiz noticeTemplateBiz;
     
     private final DxbSmsProperties dxbSmsProperties;
     
     @Override
-    public boolean sendSms(String phone, NoticeTemplate.UsesEnum usesEnum, Object... args) {
+    public boolean sendMsg(NoticeTemplateDo template, NoticeDto noticeDto) {
         try {
-            String template = noticeTemplateBiz.findTemplate(usesEnum);
-            String content = String.format(template, args);
+            String phone = noticeDto.getRecipients();
+            String content = String.format(template.getNotice(), noticeDto.getArgs());
             log.info("发送短信:手机号:{},内容:{}", phone, content);
             URI uri = new URIBuilder(dxbSmsProperties.getUrl()).setParameter("u", dxbSmsProperties.getUsername())
                     .setParameter("p", md5(dxbSmsProperties.getPassword())).setParameter("m", phone)
@@ -112,5 +109,4 @@ public class DxbSmsServiceImpl implements SmsService {
             throw new BusinessException("短信发送失败");
         }
     }
-    
 }

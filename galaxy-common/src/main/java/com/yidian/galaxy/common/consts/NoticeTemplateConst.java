@@ -5,12 +5,15 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * NoticeTemplate
+ * 消息模板常量
  *
  * @author changshuai.yuan create on 2024/1/24 18:04
  */
-public interface NoticeTemplate {
+public interface NoticeTemplateConst {
     
+    /**
+     * 模板用途
+     */
     enum UsesEnum {
         APP_USER_REGISTER
     }
