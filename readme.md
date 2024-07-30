@@ -1,7 +1,3 @@
-# Galaxy
-
-万游卡后端项目整合
-
 ## 目录说明
 
 - [galaxy-app](galaxy-app)  
